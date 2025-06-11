@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:laravan_com/models/products.dart';
 import 'package:laravan_com/service/api_service.dart';
@@ -18,8 +19,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Debug: Print the images list for the current product
-    print('Product images for "${widget.product.title}": ${widget.product.images}');
+    if(kDebugMode){
+      print('Product images for "${widget.product.title}": ${widget.product.images}');
+    }
 
     return Scaffold(
       appBar: AppBar(
