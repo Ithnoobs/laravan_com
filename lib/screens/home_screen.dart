@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:laravan_com/models/products.dart';
@@ -21,11 +22,27 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1;
   int _totalPages = 1;
   final int _limit = 10;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _fetchCategories();
+    _getAllProduct();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchSubmitted(String value) {
+    setState(() {
+      _searchQuery = value.trim();
+      _currentPage = 1;
+    });
     _getAllProduct();
   }
 
@@ -65,12 +82,17 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = true;
       products.clear();
     });
+
+    if (kDebugMode) print("Fetching products with search query: $_searchQuery, category: $selectedCategory, page: $_currentPage");
     String url;
-    if (selectedCategory != null && selectedCategory!.isNotEmpty) {
+    if (_searchQuery.isNotEmpty) {
+      url = "https://dummyjson.com/products/search?q=${Uri.encodeComponent(_searchQuery)}&limit=$_limit&skip=${(_currentPage - 1) * _limit}";
+    } else if (selectedCategory != null && selectedCategory!.isNotEmpty) {
       url = "https://dummyjson.com/products/category/${selectedCategory!}?limit=$_limit&skip=${(_currentPage - 1) * _limit}";
     } else {
       url = "https://dummyjson.com/products?limit=$_limit&skip=${(_currentPage - 1) * _limit}";
     }
+
     var response = await apiService.getUrl(url);
     var productsData = response['products'];
     setState(() {
@@ -116,6 +138,55 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             : Column(
                 children: [
+                  // Search Bar
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Search products...',
+                              prefixIcon: Icon(Icons.search, color: Colors.blueAccent),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: Colors.blueAccent, width: 1.5),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: Colors.blueAccent, width: 1.5),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+                              ),
+                            ),
+                            onSubmitted: _onSearchSubmitted,
+                          ),
+                        ),
+                        if (_searchQuery.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: IconButton(
+                              icon: Icon(Icons.clear, color: Colors.blueAccent),
+                              tooltip: 'Clear search',
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _searchQuery = '';
+                                  _currentPage = 1;
+                                });
+                                _getAllProduct();
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                   if (categories.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
