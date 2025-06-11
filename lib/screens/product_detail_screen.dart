@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:laravan_com/models/products.dart';
 import 'package:laravan_com/service/api_service.dart';
 import 'package:laravan_com/service/api_service_impli.dart';
+import 'package:laravan_com/screens/carousel_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Products product;
@@ -17,6 +18,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Debug: Print the images list for the current product
+    print('Product images for "${widget.product.title}": ${widget.product.images}');
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -33,11 +37,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               : SingleChildScrollView(
                 child: Column(
                   children: [
-                    Image.network(
-                      widget.product.thumbnail,
+                    ProductImageCarousel(
+                      imageUrls: widget.product.images,
                       height: 300,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
