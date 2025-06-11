@@ -276,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               radius: Radius.circular(8),
                               interactive: true,
                               child: ListView.builder(
+                                physics: BouncingScrollPhysics(),
                                 itemCount: products.length,
                                 itemBuilder: (BuildContext context, index) {
                                   var product = products[index];
