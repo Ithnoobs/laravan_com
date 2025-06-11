@@ -1,7 +1,6 @@
 # laravan_com
 
 A Simple Flutter Project that use api from [Dummy Json](https://dummyjson.com/).
-* :smile:
 ![Welcome](https://w.wallhaven.cc/full/dg/wallhaven-dgxkml.jpg)
 
 ### Built With
