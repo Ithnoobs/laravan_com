@@ -12,6 +12,7 @@ class AuthService {
           'password': pass,
           'expiresInMins': 60,
         });
+
       if(kDebugMode) {
         print('Login request: ${r.requestOptions.data}');
         print('Login response: ${r.data}');
@@ -46,10 +47,25 @@ class AuthService {
           'password': pass,
           'expiresInMins': 60,
         });
+      
+      if(kDebugMode) {
+        print('Register request: ${r.requestOptions.data}');
+        print('Register response: ${r.data}');
+        print('Keys in response: ${r.data.keys}');
+      }
+      
       await TokenStorage.saveTokens(r.data['accessToken'], r.data['refreshToken']);
-      await TokenStorage.saveUser(r.data['user']);
+      
+      final userJson = Map<String, dynamic>.from(r.data);
+      userJson.remove('accessToken');
+      userJson.remove('refreshToken');
+
+      await TokenStorage.saveUser(userJson);
       return true;
-    }catch (_) {
+    }catch (e) {
+      if (kDebugMode) {
+        print('Register error: $e');
+      }
       return false;
     }
   }
