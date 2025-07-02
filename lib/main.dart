@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:laravan_com/screens/home_screen.dart';
+import 'package:laravan_com/core/token_storage.dart';
+import 'package:laravan_com/screens/splash_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await TokenStorage.load();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: HomeScreen(),
+      home: SplashScreen(),
     );
   }
 }
